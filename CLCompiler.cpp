@@ -16,7 +16,7 @@ using std::ofstream;
 using std::string;
 using std::vector;
 
-#define ERROR_LINE(S)       "Error: "<<S<<endl
+#define ERROR_LINE(S)       "CL Compiler Error: "<<S<<endl
 #define USAGE_TEXT          "Usage: iclc|aclc <input files> [-o <output file>]"
 #define COMPILE_SUCCESS     0
 #define COMPILE_FAILURE     1
