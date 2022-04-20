@@ -17,7 +17,7 @@ using std::string;
 using std::vector;
 
 #define ERROR_LINE(S)       "CL Compiler Error: "<<S<<endl
-#define USAGE_TEXT          "Usage: iclc|aclc <input files> [-o <output file>]"
+#define USAGE_TEXT          "Usage: aclc|iclc <input files> [-o <output file>]"
 #define COMPILE_SUCCESS     0
 #define COMPILE_FAILURE     1
 
@@ -81,7 +81,7 @@ int CompileAndSaveCLProgram(
 	ofstream ofs(output_file_name, std::ios::out | std::ios::binary);
 	if (!ofs.is_open())
 	{
-		std::cerr << ERROR_LINE("Failed to open save file: " << output_file_name);
+		std::cerr << ERROR_LINE("Failed to open output file: " << output_file_name);
 		return COMPILE_FAILURE;
 	}
 
@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
 		ifstream ifs(i, std::ios::in);
 		if (!ifs.is_open())
 		{
-			cerr << ERROR_LINE("Failed to open kernel source: " << i);
+			cerr << ERROR_LINE("Failed to open input file: " << i);
 			return COMPILE_FAILURE;
 		}
 
@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
 		sources.push_back(source_chars[source_chars.size() - 1].data());
 	}
 
-	cout << "Enter compile options:" << endl;
+	cout << "Enter compiler options:" << endl;
 	string options;
 	std::getline(cin, options);
 
@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
 	CLDeviceHelper helper;
 	cl_device_id device_id = nullptr;
 
-	cout << "Choose your compile target device:" << endl;
+	cout << "Choose your target device:" << endl;
 
 	try
 	{
