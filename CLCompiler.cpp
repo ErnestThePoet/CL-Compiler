@@ -17,7 +17,7 @@ using std::string;
 using std::vector;
 
 #define ERROR_LINE(S)       "CL Compiler Error: "<<S<<endl
-#define USAGE_TEXT          "Usage: aclc|iclc <input files> [-o <output file>]"
+#define USAGE_TEXT          "Usage: aclc|iclc <input files> [-o <output file>] [options]"
 #define COMPILE_SUCCESS     0
 #define COMPILE_FAILURE     1
 
@@ -108,14 +108,25 @@ int main(int argc, char* argv[])
 
     vector<string> input_file_names;
     string output_file_name;
+	string options;
 
     for (int i = 1; i < argc; i++)
     {
+		// once we encounter "-o", all args next will be taken over here
         if (!strcmp(argv[i], "-o"))
         {
             if (i + 1 < argc)
             {
                 output_file_name = argv[i + 1];
+
+				if (i + 2 < argc)
+				{
+					for (int j = i + 2; j < argc; j++)
+					{
+						options += argv[j];
+						options += ' ';
+					}
+				}
             }
             else
             {
@@ -126,11 +137,29 @@ int main(int argc, char* argv[])
             break;
         }
 
-        input_file_names.emplace_back(argv[i]);
+		// handle single argument
+		if (argv[i][0] == '-')
+		{
+			options += argv[i];
+			options += ' ';
+		}
+		else
+		{
+			input_file_names.emplace_back(argv[i]);
+		}
 
-		// no output file was given; use first input file name as output file name
+		// we have arrived at the last argument and no output file was given (if there is a "-o", we won't 
+		// arrive here because the if block above will take over all args next).
+		// now we use first input file name as output file name.
 		if (i == argc - 1)
 		{
+			if (input_file_names.size() == 0)
+			{
+				cout << ERROR_LINE("No input files.");
+				cout << USAGE_TEXT << endl;
+				return COMPILE_FAILURE;
+			}
+
 			if (input_file_names[0].substr(input_file_names[0].length() - 3, 3) == ".cl")
 			{
 				output_file_name = 
@@ -168,12 +197,6 @@ int main(int argc, char* argv[])
 
 		sources.push_back(source_chars[source_chars.size() - 1].data());
 	}
-
-	cout << "Enter compiler options:" << endl;
-	string options;
-	std::getline(cin, options);
-
-	cout << endl;
 
 	CLDeviceHelper helper;
 	cl_device_id device_id = nullptr;
